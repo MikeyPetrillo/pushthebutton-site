@@ -94,8 +94,8 @@ TRIVIA = [
     "A shrimp's heart is in its head.",
     "Rats laugh when tickled.",
     "Butterflies remember being caterpillars.",
-    "There's a basketball court on the top floor of the U.S. Supreme Court called the "Highest Court in the Land."
-]
+    "There's a basketball court on the top floor of the U.S. Supreme Court called the 'Highest Court in the Land.'"
+
 
 # --- Init State ---
 def reset_game():
