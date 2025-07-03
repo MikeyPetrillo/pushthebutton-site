@@ -93,13 +93,17 @@ def reset_game():
     st.session_state.success = False
     st.session_state.start_time = 0
     st.session_state.game_started = False
+    st.session_state.clicked_this_round = False
 
 # --- Session State Init ---
 if 'target_time' not in st.session_state:
     reset_game()
     st.session_state.badges = []
     st.session_state.history = []
-    st.session_state.game_started = False
+    st.session_state.best_time = None
+
+if 'clicked_this_round' not in st.session_state:
+    st.session_state.clicked_this_round = False
 
 # --- Page Layout ---
 st.set_page_config(page_title="Push The Button", layout="centered")
@@ -109,6 +113,15 @@ st.markdown("""
   0% {opacity: 1;}
   50% {opacity: 0.3;}
   100% {opacity: 1;}
+}
+div.stButton > button:first-child {
+    font-size: 24px;
+    height: 80px;
+    width: 80%;
+    margin: auto;
+    display: block;
+    border: 2px solid #00ccff;
+    animation: shimmer 1.5s infinite linear;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -120,28 +133,21 @@ if not st.session_state.game_started:
     if st.button("🚀 Start Game"):
         st.session_state.start_time = time.time()
         st.session_state.game_started = True
+        st.session_state.clicked_this_round = False
     st.stop()
 
 # --- Timer ---
-time_elapsed = time.time() - st.session_state.start_time
+if st.session_state.game_started and not st.session_state.clicked_this_round:
+    time_elapsed = time.time() - st.session_state.start_time
+else:
+    time_elapsed = 0.0
+
 st.markdown(f"<h2 style='text-align: center;'>⏱️ {time_elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
 
 # --- Audio Effect (Auto Play) ---
 st.markdown(get_audio_tag(), unsafe_allow_html=True)
 
 # --- Game Logic ---
-st.markdown("""
-    <style>
-    div.stButton > button:first-child {
-        font-size: 24px;
-        height: 80px;
-        width: 80%;
-        margin: auto;
-        display: block;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 clicked = st.button("CLICK!")
 
 if clicked:
@@ -151,10 +157,17 @@ if clicked:
     feedback = get_hot_cold_feedback(diff, st.session_state.last_click_diff)
     st.session_state.last_click_diff = diff
     st.session_state.tries += 1
+    st.session_state.clicked_this_round = True
 
     if diff < 0.2:
         st.success(f"🎯 Nailed it! You hit it at {reaction_time:.2f}s!")
+        st.balloons()
         st.session_state.success = True
+
+        if st.session_state.best_time is None or reaction_time < st.session_state.best_time:
+            st.session_state.best_time = reaction_time
+            st.info(f"🏆 New Personal Best: {reaction_time:.2f} seconds!")
+
         fact = random.choice([fact for fact in TRIVIA if fact not in st.session_state.history])
         st.session_state.history.append(fact)
         st.info(fact)
@@ -167,6 +180,7 @@ if clicked:
     else:
         st.warning(f"You clicked at {reaction_time:.2f}s. {feedback}")
         st.session_state.start_time = time.time()
+        st.session_state.clicked_this_round = False
 
 # --- Manual Reset Button ---
 if st.button("🔄 Try Again"):
@@ -183,6 +197,10 @@ if st.session_state.history:
     with st.expander("💡 Trivia Unlocked"):
         for fact in st.session_state.history:
             st.markdown(f"- {fact}")
+
+# --- Personal Best ---
+if st.session_state.best_time:
+    st.markdown(f"<h4 style='text-align: center;'>🥇 Personal Best: {st.session_state.best_time:.2f} seconds</h4>", unsafe_allow_html=True)
 
 # --- AdSense Placeholder ---
 st.markdown("""
