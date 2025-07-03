@@ -91,13 +91,15 @@ def reset_game():
     st.session_state.last_click_diff = None
     st.session_state.tries = 0
     st.session_state.success = False
-    st.session_state.start_time = time.time()
+    st.session_state.start_time = 0
+    st.session_state.game_started = False
 
 # --- Session State Init ---
 if 'target_time' not in st.session_state:
     reset_game()
     st.session_state.badges = []
     st.session_state.history = []
+    st.session_state.game_started = False
 
 # --- Page Layout ---
 st.set_page_config(page_title="Push The Button", layout="centered")
@@ -113,15 +115,34 @@ st.markdown("""
 
 st.title("🟢 Push the Button")
 
+# --- Start Game Control ---
+if not st.session_state.game_started:
+    if st.button("🚀 Start Game"):
+        st.session_state.start_time = time.time()
+        st.session_state.game_started = True
+    st.stop()
+
 # --- Timer ---
 time_elapsed = time.time() - st.session_state.start_time
-st.markdown(f"**Time Elapsed:** {time_elapsed:.2f} seconds")
+st.markdown(f"<h2 style='text-align: center;'>⏱️ {time_elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
 
 # --- Audio Effect (Auto Play) ---
 st.markdown(get_audio_tag(), unsafe_allow_html=True)
 
 # --- Game Logic ---
-clicked = st.button("Click Me!")
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        font-size: 24px;
+        height: 80px;
+        width: 80%;
+        margin: auto;
+        display: block;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+clicked = st.button("CLICK!")
 
 if clicked:
     current_time = time.time()
@@ -138,14 +159,14 @@ if clicked:
         st.session_state.history.append(fact)
         st.info(fact)
 
-        # Cosmetic badge logic
         if st.session_state.tries in BADGES and BADGES[st.session_state.tries] not in st.session_state.badges:
             st.session_state.badges.append(BADGES[st.session_state.tries])
             st.markdown(shimmer_text(f"🏅 You unlocked: {BADGES[st.session_state.tries]}!"), unsafe_allow_html=True)
+
         reset_game()
     else:
         st.warning(f"You clicked at {reaction_time:.2f}s. {feedback}")
-        st.session_state.start_time = time.time()  # Reset timer so player can keep getting closer
+        st.session_state.start_time = time.time()
 
 # --- Manual Reset Button ---
 if st.button("🔄 Try Again"):
