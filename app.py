@@ -134,15 +134,19 @@ if not st.session_state.game_started:
         st.session_state.start_time = time.time()
         st.session_state.game_started = True
         st.session_state.clicked_this_round = False
+        st.experimental_rerun()
     st.stop()
 
 # --- Timer ---
-if st.session_state.game_started and not st.session_state.clicked_this_round:
-    time_elapsed = time.time() - st.session_state.start_time
-else:
-    time_elapsed = 0.0
+timer_placeholder = st.empty()
 
-st.markdown(f"<h2 style='text-align: center;'>⏱️ {time_elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
+if st.session_state.game_started and not st.session_state.clicked_this_round:
+    while not st.session_state.clicked_this_round:
+        time_elapsed = time.time() - st.session_state.start_time
+        timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {time_elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
+        time.sleep(0.1)
+else:
+    timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ 0.00 seconds</h2>", unsafe_allow_html=True)
 
 # --- Audio Effect (Auto Play) ---
 st.markdown(get_audio_tag(), unsafe_allow_html=True)
