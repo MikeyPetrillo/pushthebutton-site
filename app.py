@@ -147,20 +147,38 @@ with col2:
         st.session_state.clicked_this_round = True
 
 # --- Timer Display ---
-elapsed = 0.0
 if st.session_state.timer_running and not st.session_state.clicked_this_round:
     st.session_state.elapsed_time = time.time() - st.session_state.start_time
 else:
     st.session_state.elapsed_time = 0.0
 
-# Show visible stopwatch
-total_elapsed = time.time() - st.session_state.total_elapsed_start
+# Live timer
+st.markdown("""
+<script>
+    const updateTime = () => {
+        const el = window.document.getElementById("live_timer")
+        if (el) {
+            const now = Date.now() / 1000;
+            const start = Number(el.getAttribute("data-start"));
+            const diff = (now - start).toFixed(2);
+            el.innerText = `⏱️ ${diff} seconds this round`;
+        }
+    };
+    setInterval(updateTime, 100);
+</script>
+""", unsafe_allow_html=True)
 
-st.markdown(f"<h2 style='text-align: center;'>⏱️ {st.session_state.elapsed_time:.2f} seconds this round</h2>", unsafe_allow_html=True)
+st.markdown(f"""
+<h2 id="live_timer" data-start="{st.session_state.start_time}" style='text-align: center;'>⏱️ 0.00 seconds this round</h2>
+""", unsafe_allow_html=True)
+
+# Show total elapsed time
+total_elapsed = time.time() - st.session_state.total_elapsed_start
 st.markdown(f"<h4 style='text-align: center; color: gray;'>⏳ Total Time Elapsed: {total_elapsed:.2f} seconds</h4>", unsafe_allow_html=True)
 
 # --- Audio Effect (Auto Play) ---
-st.markdown(get_audio_tag(), unsafe_allow_html=True)
+if st.session_state.clicked_this_round:
+    st.markdown(get_audio_tag(), unsafe_allow_html=True)
 
 # --- Game Logic ---
 if st.button("🔘 Push the Button"):
