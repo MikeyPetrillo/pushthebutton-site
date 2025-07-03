@@ -134,8 +134,9 @@ if not st.session_state.game_started:
         st.session_state.start_time = time.time()
         st.session_state.game_started = True
         st.session_state.clicked_this_round = False
-        st.experimental_rerun()
-    st.stop()
+    else:
+        st.stop()
+
 
 # --- Timer ---
 timer_placeholder = st.empty()
