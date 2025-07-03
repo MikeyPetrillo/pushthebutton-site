@@ -92,7 +92,7 @@ def reset_game():
     st.session_state.tries = 0
     st.session_state.success = False
     st.session_state.start_time = 0
-    st.session_state.game_started = False
+    st.session_state.timer_running = False
     st.session_state.clicked_this_round = False
 
 # --- Session State Init ---
@@ -101,9 +101,6 @@ if 'target_time' not in st.session_state:
     st.session_state.badges = []
     st.session_state.history = []
     st.session_state.best_time = None
-
-if 'clicked_this_round' not in st.session_state:
-    st.session_state.clicked_this_round = False
 
 # --- Page Layout ---
 st.set_page_config(page_title="Push The Button", layout="centered")
@@ -128,23 +125,29 @@ div.stButton > button:first-child {
 
 st.title("🟢 Push the Button")
 
-# --- Start Game Control ---
-if not st.session_state.game_started:
-    if st.button("🚀 Start Game"):
-        st.session_state.start_time = time.time()
-        st.session_state.game_started = True
-        st.session_state.clicked_this_round = False
-    else:
-        st.stop()
+# --- Game Control ---
+col1, col2 = st.columns(2)
 
+with col1:
+    if st.button("🚀 Start Game"):
+        reset_game()
+        st.session_state.start_time = time.time()
+        st.session_state.timer_running = True
+        st.session_state.clicked_this_round = False
+
+with col2:
+    if st.button("🛑 Stop Game"):
+        st.session_state.timer_running = False
+        st.session_state.clicked_this_round = True
 
 # --- Timer ---
 timer_placeholder = st.empty()
 
-if st.session_state.game_started and not st.session_state.clicked_this_round:
+if st.session_state.timer_running and not st.session_state.clicked_this_round:
+    start_time = st.session_state.start_time
     while not st.session_state.clicked_this_round:
-        time_elapsed = time.time() - st.session_state.start_time
-        timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {time_elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
+        elapsed = time.time() - start_time
+        timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
         time.sleep(0.1)
 else:
     timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ 0.00 seconds</h2>", unsafe_allow_html=True)
@@ -153,9 +156,7 @@ else:
 st.markdown(get_audio_tag(), unsafe_allow_html=True)
 
 # --- Game Logic ---
-clicked = st.button("CLICK!")
-
-if clicked:
+if st.button("CLICK!"):
     current_time = time.time()
     reaction_time = current_time - st.session_state.start_time
     diff = abs(st.session_state.target_time - reaction_time)
@@ -186,10 +187,6 @@ if clicked:
         st.warning(f"You clicked at {reaction_time:.2f}s. {feedback}")
         st.session_state.start_time = time.time()
         st.session_state.clicked_this_round = False
-
-# --- Manual Reset Button ---
-if st.button("🔄 Try Again"):
-    reset_game()
 
 # --- Show Badges ---
 if st.session_state.badges:
