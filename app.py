@@ -101,6 +101,8 @@ if 'target_time' not in st.session_state:
     st.session_state.badges = []
     st.session_state.history = []
     st.session_state.best_time = None
+    st.session_state.total_time_elapsed = 0
+    st.session_state.global_start_time = time.time()
 
 # --- Page Layout ---
 st.set_page_config(page_title="Push The Button", layout="centered")
@@ -132,6 +134,7 @@ with col1:
     if st.button("🚀 Start Game"):
         reset_game()
         st.session_state.start_time = time.time()
+        st.session_state.global_start_time = time.time()
         st.session_state.timer_running = True
         st.session_state.clicked_this_round = False
 
@@ -142,12 +145,17 @@ with col2:
 
 # --- Timer ---
 timer_placeholder = st.empty()
+global_timer_placeholder = st.empty()
 
 if st.session_state.timer_running and not st.session_state.clicked_this_round:
     elapsed = time.time() - st.session_state.start_time
+    global_elapsed = time.time() - st.session_state.global_start_time
     timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
+    global_timer_placeholder.markdown(f"<h4 style='text-align: center;'>⏲️ Total Time Elapsed: {global_elapsed:.2f}s</h4>", unsafe_allow_html=True)
 else:
     timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ 0.00 seconds</h2>", unsafe_allow_html=True)
+    global_elapsed = time.time() - st.session_state.global_start_time
+    global_timer_placeholder.markdown(f"<h4 style='text-align: center;'>⏲️ Total Time Elapsed: {global_elapsed:.2f}s</h4>", unsafe_allow_html=True)
 
 # --- Audio Effect (Auto Play) ---
 st.markdown(get_audio_tag(), unsafe_allow_html=True)
@@ -162,7 +170,7 @@ if st.button("🔘 Push the Button"):
     st.session_state.tries += 1
     st.session_state.clicked_this_round = True
 
-    if diff < 0.2:
+    if diff < 1.0:
         st.success(f"🎯 Nailed it! You hit it at {reaction_time:.2f}s!")
         st.balloons()
         st.session_state.success = True
