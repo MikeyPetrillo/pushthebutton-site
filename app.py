@@ -4,6 +4,7 @@ import time
 import base64
 import numpy as np
 import matplotlib.pyplot as plt
+import threading
 
 # --- Constants ---
 BADGES = {
@@ -148,13 +149,16 @@ timer_placeholder = st.empty()
 global_timer_placeholder = st.empty()
 
 if st.session_state.timer_running and not st.session_state.clicked_this_round:
-    elapsed = time.time() - st.session_state.start_time
+    while st.session_state.timer_running and not st.session_state.clicked_this_round:
+        elapsed = time.time() - st.session_state.start_time
+        global_elapsed = time.time() - st.session_state.global_start_time
+        timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
+        global_timer_placeholder.markdown(f"<h4 style='text-align: center;'>⏲️ Total Time Elapsed: {global_elapsed:.2f}s</h4>", unsafe_allow_html=True)
+        time.sleep(0.1)
+else:
+    elapsed = 0.0
     global_elapsed = time.time() - st.session_state.global_start_time
     timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
-    global_timer_placeholder.markdown(f"<h4 style='text-align: center;'>⏲️ Total Time Elapsed: {global_elapsed:.2f}s</h4>", unsafe_allow_html=True)
-else:
-    timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ 0.00 seconds</h2>", unsafe_allow_html=True)
-    global_elapsed = time.time() - st.session_state.global_start_time
     global_timer_placeholder.markdown(f"<h4 style='text-align: center;'>⏲️ Total Time Elapsed: {global_elapsed:.2f}s</h4>", unsafe_allow_html=True)
 
 # --- Audio Effect (Auto Play) ---
