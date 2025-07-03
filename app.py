@@ -1,246 +1,216 @@
 import streamlit as st
 import random
 import time
-import base64
-import numpy as np
-import matplotlib.pyplot as plt
 
 # --- Constants ---
 BADGES = {
     5: "Cadet Clicker",
     15: "Rhythm Master",
-    25: "Button Lord"
+    25: "Button Lord",
+    50: "Master of Timing",
+    100: "The Button Legend"
 }
 
 TRIVIA = [
-    "The first button was patented in 1841.",
-    "Streamlit is an open-source Python library for building data apps.",
-    "Clicking activates parts of your brain tied to motor response.",
-    "Your reaction time improves with regular practice.",
-    "Games like this stimulate dopamine release.",
-    "The world record for fastest reaction time is about 0.101 seconds.",
-    "Monkeys can be trained to play simple computer games.",
-    "Your brain can process images in as little as 13 milliseconds.",
-    "Tapping games have been used in cognitive research.",
-    "Reflex training is used in elite athlete conditioning.",
-    "Human eyes can detect light from a single photon.",
-    "The average human reaction time is 0.25 seconds.",
-    "Reaction time slows with fatigue.",
-    "Older adults can train to improve reflex speed.",
-    "Games can enhance decision-making speed.",
-    "Animals like cats have faster reflexes than humans.",
-    "Sound reaches your ears faster than you consciously react.",
-    "Tapping games can improve hand-eye coordination.",
-    "People with ADHD may respond better to rhythmic feedback.",
-    "The cerebellum helps with timing and motor control.",
-    "Touchscreens use capacitive sensing to detect input.",
-    "Light travels at 299,792,458 meters per second.",
-    "Gamification can improve learning outcomes.",
-    "Your dominant hand is usually faster in reflex games.",
-    "Streamlit apps can be deployed with a single click.",
-    "Boredom can reduce reaction performance.",
-    "The human nervous system transmits signals at 120 m/s.",
-    "Clicking engages the motor cortex.",
-    "Color contrast can affect button visibility.",
-    "Trivia enhances game retention in casual apps.",
-    "Timing games are common in esports training.",
-    "The Guinness World Record for most taps in 30 seconds is 402.",
-    "Visual reaction time is generally slower than auditory.",
-    "People blink faster under stress.",
-    "Blue light from screens can suppress melatonin.",
-    "Speed typing games use similar timing loops.",
-    "Reaction-based games are older than video games.",
-    "Ping pong is often used to train reflexes.",
-    "People often underestimate time intervals by ~20%.",
-    "Gamers may have better peripheral awareness.",
-    "Red is perceived faster than blue.",
-    "Multitasking increases error rate in timing games.",
-    "The amygdala can influence reflex under fear.",
-    "Microseconds matter in competitive gaming.",
-    "The Stroop effect is a famous reaction time experiment.",
-    "Some species of flies react 10x faster than humans.",
-    "Reflex tests are common in driver licensing exams.",
-    "The Spacebar is the most commonly used key in reaction games.",
-    "Hand-eye coordination can improve with drumming."
+    "Bananas are berries, but strawberries aren't.",
+    "Octopuses have three hearts.",
+    "Honey never spoils.",
+    "Sharks existed before trees.",
+    "Butterflies can taste with their feet.",
+    "The Eiffel Tower can grow taller in the summer.",
+    "Some turtles can breathe through their butts.",
+    "The inventor of the frisbee was turned into a frisbee after he died.",
+    "Sloths can hold their breath longer than dolphins can.",
+    "A day on Venus is longer than a year on Venus.",
+    "Cows have best friends.",
+    "Wombat poop is cube-shaped.",
+    "The moon has moonquakes.",
+    "Ketchup was sold as medicine in the 1830s.",
+    "A group of flamingos is called a flamboyance.",
+    "Jellyfish have survived 500 million years without brains.",
+    "Penguins propose to their mates with a pebble.",
+    "The longest hiccuping spree lasted 68 years.",
+    "There are more trees on Earth than stars in the Milky Way.",
+    "Bees can recognize human faces.",
+    "A cloud can weigh over a million pounds.",
+    "The unicorn is the national animal of Scotland.",
+    "Snails can sleep for three years.",
+    "Dolphins have names for each other.",
+    "Koalas' fingerprints are almost indistinguishable from humans'.",
+    "The heart of a blue whale is as big as a small car.",
+    "Tomatoes and avocados are fruits.",
+    "Lightning strikes about 8 million times per day worldwide.",
+    "Birds are the closest living relatives to dinosaurs.",
+    "A group of owls is called a parliament.",
+    "Sea otters hold hands while they sleep.",
+    "Camels have three eyelids.",
+    "Sloths can hold their breath longer than dolphins.",
+    "The world's largest snowflake was 15 inches wide.",
+    "Antarctica is the driest place on Earth.",
+    "Bananas glow blue under black lights.",
+    "There’s a basketball court on the top floor of the U.S. Supreme Court building called the 'Highest Court in the Land.'",
+    "Hot water freezes faster than cold water.",
+    "A shrimp's heart is located in its head.",
+    "A single sneeze travels 100 miles per hour.",
+    "Some frogs can freeze solid and still live.",
+    "Polar bears have black skin under their white fur.",
+    "Sharks never stop moving.",
+    "Lobsters taste with their legs.",
+    "The dot over the lowercase 'i' and 'j' is called a tittle.",
+    "The M's in M&Ms stand for Mars and Murrie.",
+    "Apples float because 25% of their volume is air.",
+    "Cows produce more milk when they listen to calming music.",
+    "The longest English word is 189,819 letters long.",
+    "A group of porcupines is called a prickle.",
+    "Dolphins sleep with one eye open.",
+    "Penguins can jump up to six feet in the air.",
+    "Koalas sleep up to 22 hours a day.",
+    "The electric chair was invented by a dentist.",
+    "Elephants can't jump.",
+    "Octopuses have blue blood.",
+    "The national animal of Canada is the beaver.",
+    "A panda's diet is 99% bamboo.",
+    "Horses can't vomit.",
+    "Jellyfish have no brains, hearts, or bones.",
+    "The average person walks the equivalent of five times around the world in their lifetime.",
+    "Sharks existed before dinosaurs.",
+    "Cats can't taste sweetness.",
+    "The tongue is the strongest muscle in the human body relative to its size.",
+    "Dolphins can recognize themselves in a mirror.",
+    "Some turtles breathe through their butts.",
+    "Butterflies remember being caterpillars.",
+    "Wolves change the course of rivers.",
+    "The average lifespan of a mosquito is two weeks.",
+    "Sloths are so slow that algae grow on their fur.",
+    "A bolt of lightning contains enough energy to toast 100,000 slices of bread.",
+    "Some cats are allergic to humans.",
+    "The speed of a computer mouse is measured in 'Mickeys.'",
+    "Bees sometimes sting other bees.",
+    "The world's smallest reptile was discovered in 2021.",
+    "A group of ravens is called an unkindness.",
+    "The inventor of Pringles is buried in a Pringles can.",
+    "The human nose can detect over 1 trillion scents.",
+    "A group of crows is called a murder.",
+    "Horses and cows can sleep standing up.",
+    "The eye of an ostrich is bigger than its brain.",
+    "Rabbits can't vomit.",
+    "Frogs drink water through their skin.",
+    "The fingerprints of a koala are virtually indistinguishable from humans'.",
+    "The heart of a shrimp is located in its head.",
+    "The unicorn is the national animal of Scotland.",
+    "The only letter not appearing on the periodic table is J.",
+    "The Guinness World Record for longest hiccups lasted 68 years."
 ]
 
-# --- Utility Functions ---
-def get_audio_tag():
-    sound_url = "https://actions.google.com/sounds/v1/cartoon/pop.ogg"
-    return f"""
-        <audio autoplay>
-            <source src="{sound_url}" type="audio/ogg">
-        </audio>
-    """
-
-def get_hot_cold_feedback(current_diff, last_diff):
-    if last_diff is None:
-        return ""
-    if current_diff < last_diff:
-        return "You're getting hotter!"
-    elif current_diff > last_diff:
-        return "You're getting colder!"
-    else:
-        return "No change..."
-
-def shimmer_text(text):
-    return f"<div style='animation: shimmer 1.5s infinite linear;'>⭐ {text} ⭐</div>"
-
-def reset_game():
+# --- Init State ---
+def reset_state():
+    st.session_state.started = False
     st.session_state.target_time = random.uniform(3, 7)
-    st.session_state.last_click_diff = None
-    st.session_state.tries = 0
-    st.session_state.success = False
     st.session_state.start_time = 0
-    st.session_state.timer_running = False
-    st.session_state.clicked_this_round = False
-    st.session_state.elapsed_time = 0
-    st.session_state.total_elapsed_start = time.time()
-
-# --- Session State Init ---
-if 'target_time' not in st.session_state:
-    reset_game()
-    st.session_state.badges = []
-    st.session_state.history = []
+    st.session_state.tries = 0
+    st.session_state.last_diff = None
     st.session_state.best_time = None
-    st.session_state.global_start_time = time.time()
+    st.session_state.badges = []
+    st.session_state.trivia_history = []
+    st.session_state.streak = 0
     st.session_state.total_elapsed_start = time.time()
+    st.session_state.play_count = 0
+    st.session_state.play_limit = 10
 
-# --- Page Layout ---
-st.set_page_config(page_title="Push The Button", layout="centered")
+if 'started' not in st.session_state:
+    reset_state()
+
+# --- Page Setup ---
+st.set_page_config(page_title="The Button Game", layout="centered")
 st.markdown("""
 <style>
-@keyframes shimmer {
-  0% {opacity: 1;}
-  50% {opacity: 0.3;}
-  100% {opacity: 1;}
-}
-div.stButton > button:first-child {
-    font-size: 24px;
-    height: 80px;
-    width: 80%;
-    margin: auto;
-    display: block;
-    border: 2px solid #00ccff;
-    animation: shimmer 1.5s infinite linear;
-}
+.title-shimmer {font-size: 36px; animation: shimmer 2s infinite linear;}
+@keyframes shimmer { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+.badge {animation: shimmer 1.5s infinite linear;}
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🟢 Push the Button")
+st.markdown("<div class='title-shimmer'>🟢 Push the Button</div>", unsafe_allow_html=True)
 
-# --- Game Control ---
-col1, col2 = st.columns(2)
+# --- Scarcity Check ---
+if st.session_state.play_count >= st.session_state.play_limit:
+    st.error("⚠️ Daily play limit reached. Come back tomorrow!")
+    st.stop()
 
-with col1:
-    if st.button("🚀 Start Game"):
-        reset_game()
-        st.session_state.start_time = time.time()
-        st.session_state.global_start_time = time.time()
-        st.session_state.timer_running = True
-        st.session_state.clicked_this_round = False
-        st.session_state.total_elapsed_start = time.time()
+# --- Start Game Button ---
+if st.button("🚀 Start Game"):
+    st.session_state.target_time = random.uniform(3, 7)
+    st.session_state.start_time = time.time()
+    st.session_state.started = True
+    st.session_state.tries = 0
+    st.session_state.last_diff = None
 
-with col2:
-    if st.button("🛑 Stop Game"):
-        st.session_state.timer_running = False
-        st.session_state.clicked_this_round = True
+# --- Stopwatch ---
+timer_placeholder = st.empty()
 
-# --- Timer Display ---
-if st.session_state.timer_running and not st.session_state.clicked_this_round:
-    st.session_state.elapsed_time = time.time() - st.session_state.start_time
-else:
-    st.session_state.elapsed_time = 0.0
+if st.session_state.started:
+    start_time = st.session_state.start_time
+    while st.session_state.started:
+        elapsed_time = time.time() - start_time
+        total_elapsed = time.time() - st.session_state.total_elapsed_start
+        timer_placeholder.markdown(f"## ⏱️ Elapsed Time: {elapsed_time:.2f} seconds")
+        st.markdown(f"Total Elapsed: {total_elapsed:.2f} seconds")
+        time.sleep(0.1)
+        st.experimental_rerun()
 
-# Live timer
-st.markdown("""
-<script>
-    const updateTime = () => {
-        const el = window.document.getElementById("live_timer")
-        if (el) {
-            const now = Date.now() / 1000;
-            const start = Number(el.getAttribute("data-start"));
-            const diff = (now - start).toFixed(2);
-            el.innerText = `⏱️ ${diff} seconds this round`;
-        }
-    };
-    setInterval(updateTime, 100);
-</script>
-""", unsafe_allow_html=True)
+# --- Push the Button ---
+if st.session_state.started and st.button("🔘 Push the Button"):
+    st.session_state.play_count += 1
+    reaction = time.time() - st.session_state.start_time
+    diff = abs(st.session_state.target_time - reaction)
 
-st.markdown(f"""
-<h2 id="live_timer" data-start="{st.session_state.start_time}" style='text-align: center;'>⏱️ 0.00 seconds this round</h2>
-""", unsafe_allow_html=True)
+    st.audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg")
 
-# Show total elapsed time
-total_elapsed = time.time() - st.session_state.total_elapsed_start
-st.markdown(f"<h4 style='text-align: center; color: gray;'>⏳ Total Time Elapsed: {total_elapsed:.2f} seconds</h4>", unsafe_allow_html=True)
-
-# --- Audio Effect (Auto Play) ---
-if st.session_state.clicked_this_round:
-    st.markdown(get_audio_tag(), unsafe_allow_html=True)
-
-# --- Game Logic ---
-if st.button("🔘 Push the Button"):
-    current_time = time.time()
-    reaction_time = current_time - st.session_state.start_time
-    diff = abs(st.session_state.target_time - reaction_time)
-    feedback = get_hot_cold_feedback(diff, st.session_state.last_click_diff)
-    st.session_state.last_click_diff = diff
-    st.session_state.tries += 1
-    st.session_state.clicked_this_round = True
-
-    if diff < 1.0:
-        st.success(f"🎯 Nailed it! You hit it at {reaction_time:.2f}s!")
+    if diff <= 1:
+        st.success(f"🎯 Nailed it at {reaction:.2f}s!")
         st.balloons()
-        st.session_state.success = True
+        st.session_state.started = False
+        st.session_state.streak += 1
 
-        if st.session_state.best_time is None or reaction_time < st.session_state.best_time:
-            st.session_state.best_time = reaction_time
-            st.info(f"🏆 New Personal Best: {reaction_time:.2f} seconds!")
+        if st.session_state.best_time is None or reaction < st.session_state.best_time:
+            st.session_state.best_time = reaction
+            st.info(f"🏆 New Personal Best: {reaction:.2f}s!")
 
-        fact = random.choice([fact for fact in TRIVIA if fact not in st.session_state.history])
-        st.session_state.history.append(fact)
-        st.info(fact)
+        fact = random.choice([fact for fact in TRIVIA if fact not in st.session_state.trivia_history])
+        st.session_state.trivia_history.append(fact)
+        st.info(f"💡 Fun Fact: {fact}")
 
-        if st.session_state.tries in BADGES and BADGES[st.session_state.tries] not in st.session_state.badges:
-            st.session_state.badges.append(BADGES[st.session_state.tries])
-            st.markdown(shimmer_text(f"🏅 You unlocked: {BADGES[st.session_state.tries]}!"), unsafe_allow_html=True)
+        if st.session_state.streak in BADGES and BADGES[st.session_state.streak] not in st.session_state.badges:
+            badge = BADGES[st.session_state.streak]
+            st.session_state.badges.append(badge)
+            st.markdown(f"<div class='badge'>🏅 Badge Unlocked: {badge}</div>", unsafe_allow_html=True)
 
-        reset_game()
     else:
-        st.warning(f"You clicked at {reaction_time:.2f}s. {feedback}")
-        st.markdown("🔁 Try again and get closer to the target!")
-        st.session_state.start_time = time.time()
-        st.session_state.clicked_this_round = False
+        feedback = "Hotter!" if st.session_state.last_diff is not None and diff < st.session_state.last_diff else "Colder!"
+        st.warning(f"You clicked at {reaction:.2f}s. {feedback}")
+        st.session_state.last_diff = diff
+        st.session_state.tries += 1
+        st.session_state.streak = 0
 
 # --- Show Badges ---
 if st.session_state.badges:
     st.subheader("🏆 Your Badges")
     for badge in st.session_state.badges:
-        st.markdown(shimmer_text(badge), unsafe_allow_html=True)
+        st.markdown(f"<div class='badge'>{badge}</div>", unsafe_allow_html=True)
 
-# --- Trivia Archive ---
-if st.session_state.history:
-    with st.expander("💡 Trivia Unlocked"):
-        for fact in st.session_state.history:
-            st.markdown(f"- {fact}")
+# --- Show Trivia History ---
+if st.session_state.trivia_history:
+    st.subheader("💡 Trivia Unlocked")
+    for fact in st.session_state.trivia_history:
+        st.write(f"- {fact}")
 
-# --- Personal Best ---
+# --- Show Best Time ---
 if st.session_state.best_time:
-    st.markdown(f"<h4 style='text-align: center;'>🥇 Personal Best: {st.session_state.best_time:.2f} seconds</h4>", unsafe_allow_html=True)
+    st.markdown(f"### 🥇 Personal Best: {st.session_state.best_time:.2f} seconds")
 
-# --- AdSense Placeholder ---
-st.markdown("""
-<div style='margin: 20px auto; text-align: center;'>
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
-       data-ad-slot="1234567890"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-</div>
-""", unsafe_allow_html=True)
+# --- Scarcity Mode Status ---
+remaining_plays = st.session_state.play_limit - st.session_state.play_count
+st.markdown(f"**Scarcity Mode:** {remaining_plays} plays left today.")
+
+# --- Leaderboard Placeholder ---
+st.markdown("**Leaderboard:** Coming soon! [Firebase/Supabase]")
