@@ -4,7 +4,6 @@ import time
 import base64
 import numpy as np
 import matplotlib.pyplot as plt
-import threading
 
 # --- Constants ---
 BADGES = {
@@ -95,6 +94,8 @@ def reset_game():
     st.session_state.start_time = 0
     st.session_state.timer_running = False
     st.session_state.clicked_this_round = False
+    st.session_state.elapsed_time = 0
+    st.session_state.total_elapsed_start = time.time()
 
 # --- Session State Init ---
 if 'target_time' not in st.session_state:
@@ -102,8 +103,8 @@ if 'target_time' not in st.session_state:
     st.session_state.badges = []
     st.session_state.history = []
     st.session_state.best_time = None
-    st.session_state.total_time_elapsed = 0
     st.session_state.global_start_time = time.time()
+    st.session_state.total_elapsed_start = time.time()
 
 # --- Page Layout ---
 st.set_page_config(page_title="Push The Button", layout="centered")
@@ -138,28 +139,25 @@ with col1:
         st.session_state.global_start_time = time.time()
         st.session_state.timer_running = True
         st.session_state.clicked_this_round = False
+        st.session_state.total_elapsed_start = time.time()
 
 with col2:
     if st.button("🛑 Stop Game"):
         st.session_state.timer_running = False
         st.session_state.clicked_this_round = True
 
-# --- Timer ---
-timer_placeholder = st.empty()
-global_timer_placeholder = st.empty()
-
+# --- Timer Display ---
+elapsed = 0.0
 if st.session_state.timer_running and not st.session_state.clicked_this_round:
-    while st.session_state.timer_running and not st.session_state.clicked_this_round:
-        elapsed = time.time() - st.session_state.start_time
-        global_elapsed = time.time() - st.session_state.global_start_time
-        timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
-        global_timer_placeholder.markdown(f"<h4 style='text-align: center;'>⏲️ Total Time Elapsed: {global_elapsed:.2f}s</h4>", unsafe_allow_html=True)
-        time.sleep(0.1)
+    st.session_state.elapsed_time = time.time() - st.session_state.start_time
 else:
-    elapsed = 0.0
-    global_elapsed = time.time() - st.session_state.global_start_time
-    timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
-    global_timer_placeholder.markdown(f"<h4 style='text-align: center;'>⏲️ Total Time Elapsed: {global_elapsed:.2f}s</h4>", unsafe_allow_html=True)
+    st.session_state.elapsed_time = 0.0
+
+# Show visible stopwatch
+total_elapsed = time.time() - st.session_state.total_elapsed_start
+
+st.markdown(f"<h2 style='text-align: center;'>⏱️ {st.session_state.elapsed_time:.2f} seconds this round</h2>", unsafe_allow_html=True)
+st.markdown(f"<h4 style='text-align: center; color: gray;'>⏳ Total Time Elapsed: {total_elapsed:.2f} seconds</h4>", unsafe_allow_html=True)
 
 # --- Audio Effect (Auto Play) ---
 st.markdown(get_audio_tag(), unsafe_allow_html=True)
