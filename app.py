@@ -144,11 +144,8 @@ with col2:
 timer_placeholder = st.empty()
 
 if st.session_state.timer_running and not st.session_state.clicked_this_round:
-    start_time = st.session_state.start_time
-    while not st.session_state.clicked_this_round:
-        elapsed = time.time() - start_time
-        timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
-        time.sleep(0.1)
+    elapsed = time.time() - st.session_state.start_time
+    timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ {elapsed:.2f} seconds</h2>", unsafe_allow_html=True)
 else:
     timer_placeholder.markdown(f"<h2 style='text-align: center;'>⏱️ 0.00 seconds</h2>", unsafe_allow_html=True)
 
@@ -156,7 +153,7 @@ else:
 st.markdown(get_audio_tag(), unsafe_allow_html=True)
 
 # --- Game Logic ---
-if st.button("CLICK!"):
+if st.button("🔘 Push the Button"):
     current_time = time.time()
     reaction_time = current_time - st.session_state.start_time
     diff = abs(st.session_state.target_time - reaction_time)
@@ -185,6 +182,7 @@ if st.button("CLICK!"):
         reset_game()
     else:
         st.warning(f"You clicked at {reaction_time:.2f}s. {feedback}")
+        st.markdown("🔁 Try again and get closer to the target!")
         st.session_state.start_time = time.time()
         st.session_state.clicked_this_round = False
 
