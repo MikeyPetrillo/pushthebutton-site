@@ -86,13 +86,16 @@ def get_hot_cold_feedback(current_diff, last_diff):
 def shimmer_text(text):
     return f"<div style='animation: shimmer 1.5s infinite linear;'>⭐ {text} ⭐</div>"
 
-# --- Session State Init ---
-if 'target_time' not in st.session_state:
+def reset_game():
     st.session_state.target_time = random.uniform(3, 7)
     st.session_state.last_click_diff = None
     st.session_state.tries = 0
     st.session_state.success = False
     st.session_state.start_time = time.time()
+
+# --- Session State Init ---
+if 'target_time' not in st.session_state:
+    reset_game()
     st.session_state.badges = []
     st.session_state.history = []
 
@@ -139,15 +142,14 @@ if clicked:
         if st.session_state.tries in BADGES and BADGES[st.session_state.tries] not in st.session_state.badges:
             st.session_state.badges.append(BADGES[st.session_state.tries])
             st.markdown(shimmer_text(f"🏅 You unlocked: {BADGES[st.session_state.tries]}!"), unsafe_allow_html=True)
+        reset_game()
     else:
         st.warning(f"You clicked at {reaction_time:.2f}s. {feedback}")
+        st.session_state.start_time = time.time()  # Reset timer so player can keep getting closer
 
-if st.session_state.success:
-    st.session_state.target_time = random.uniform(3, 7)
-    st.session_state.last_click_diff = None
-    st.session_state.tries = 0
-    st.session_state.success = False
-    st.session_state.start_time = time.time()
+# --- Manual Reset Button ---
+if st.button("🔄 Try Again"):
+    reset_game()
 
 # --- Show Badges ---
 if st.session_state.badges:
